@@ -9,31 +9,40 @@ processing, proof generation, data submission and state transitions.
 
 ## Table of Contents
 
-- [Overview](#-overview)
-- [Architecture](#️-architecture)
-  - [Job Processing Model](#job-processing-model)
-  - [Queue Structure](#queue-structure)
-  - [Workflow](#workflow)
-- [Technical Requirements](#️-technical-requirements)
-  - [System Dependencies](#system-dependencies)
-  - [Core Dependencies](#core-dependencies)
-- [Installation & Setup](#-installation--setup)
-  - [Building from Source](#building-from-source)
-  - [Local Development Setup](#local-development-setup)
-  - [Setup Mode](#setup-mode)
-  - [Run Mode](#run-mode)
-  - [Command Line Options](#command-line-options)
-- [Configuration](#️-configuration)
-  - [AWS Configuration](#aws-configuration)
-  - [Prover Configuration](#prover-configuration)
-  - [Database Configuration](#database-configuration)
-- [Testing](#-testing)
-  - [Local Environment Setup](#local-environment-setup)
-  - [Types of Tests](#types-of-tests)
-  - [Running Tests](#running-tests)
-- [Monitoring](#-monitoring)
-- [Error Handling](#-error-handling)
-- [Additional Resources](#additional-resources)
+- [Madara Orchestrator 🎭](#madara-orchestrator-)
+  - [Table of Contents](#table-of-contents)
+  - [📋 Overview](#-overview)
+  - [🏛️ Architecture](#️-architecture)
+    - [Job Processing Model](#job-processing-model)
+    - [Queue Structure](#queue-structure)
+    - [Workflow](#workflow)
+  - [🛠️ Technical Requirements](#️-technical-requirements)
+    - [System Dependencies](#system-dependencies)
+    - [Core Dependencies](#core-dependencies)
+  - [🚀 Installation \& Setup](#-installation--setup)
+    - [Building from Source](#building-from-source)
+    - [Local Development Setup](#local-development-setup)
+    - [Setup Mode](#setup-mode)
+    - [Run Mode](#run-mode)
+    - [Command Line Options](#command-line-options)
+  - [⚙️ Configuration](#️-configuration)
+    - [AWS Configuration](#aws-configuration)
+    - [Prover Configuration](#prover-configuration)
+    - [Database Configuration](#database-configuration)
+  - [🔍 Monitoring](#-monitoring)
+  - [🐛 Error Handling](#-error-handling)
+  - [📓 Testing](#-testing)
+    - [Local Environment Setup](#local-environment-setup)
+    - [Types of Tests](#types-of-tests)
+    - [Running Tests](#running-tests)
+      - [Running E2E Tests](#running-e2e-tests)
+      - [Running Integration and Unit Tests](#running-integration-and-unit-tests)
+  - [📓 More Information](#-more-information)
+  - [Additional Resources](#additional-resources)
+  - [Resilient Setup Process](#resilient-setup-process)
+    - [How it works](#how-it-works)
+    - [Usage](#usage)
+    - [Error Messages](#error-messages)
 
 ## 📋 Overview
 
@@ -518,3 +527,41 @@ visualization tools.
 - [Madara Documentation](https://github.com/madara-alliance/madara)
 - [LocalStack Documentation](https://docs.localstack.cloud/)
 - [Foundry Documentation](https://book.getfoundry.sh/)
+
+## Resilient Setup Process
+
+The Madara Orchestrator now has a resilient setup process that handles interruptions gracefully. If the setup is interrupted at any point (due to network issues, AWS timing out, etc.), you can simply run the setup command again, and it will:
+
+1. Skip resources that already exist
+2. Continue creating resources that weren't created in the previous run
+3. Provide clear feedback about which steps were skipped and which were executed
+
+This approach makes the setup process:
+- **Idempotent**: Running it multiple times produces the same end result
+- **Resumable**: Interrupted setups can be resumed without manual intervention
+- **Clear**: The setup process provides detailed feedback about what's happening
+
+### How it works
+
+The setup process attempts to create each AWS resource (queues, buckets, topics, etc.) and captures "already exists" errors. When such an error occurs, the setup continues to the next step instead of failing.
+
+### Usage
+
+To set up the orchestrator, run:
+
+```bash
+cargo run --bin orchestrator -- setup [OPTIONS]
+```
+
+If the setup is interrupted or fails, you can simply run the same command again to continue from where it left off.
+
+### Error Messages
+
+During setup, you might see messages like:
+
+```
+Setting up queues. ⏳
+Queues already exist, skipping setup ✅
+```
+
+These indicate that the resource was already created in a previous run and is being skipped, which is expected behavior.

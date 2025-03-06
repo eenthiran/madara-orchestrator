@@ -89,10 +89,32 @@ pub enum ProviderConfig {
     AWS(Box<SdkConfig>),
 }
 
+impl std::fmt::Debug for ProviderConfig {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ProviderConfig::AWS(_) => write!(f, "AWS"),
+        }
+    }
+}
+
+impl std::fmt::Display for ProviderConfig {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ProviderConfig::AWS(_) => write!(f, "AWS"),
+        }
+    }
+}
+
 impl ProviderConfig {
     pub fn get_aws_client_or_panic(&self) -> &SdkConfig {
         match self {
             ProviderConfig::AWS(config) => config.as_ref(),
+        }
+    }
+
+    pub fn get_provider_name(&self) -> String {
+        match self {
+            ProviderConfig::AWS(_) => "AWS".to_string(),
         }
     }
 }

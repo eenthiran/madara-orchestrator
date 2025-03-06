@@ -47,3 +47,4 @@ readable formatting.
 Taplo allows you to customize the formatting rules by adding configuration
 options. You can find the available options and how to use them
 [here](https://taplo.tamasfe.dev/configuration/formatter-options.html).
+

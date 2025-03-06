@@ -4,7 +4,7 @@ use orchestrator::cli::{Cli, Commands, RunCmd, SetupCmd};
 use orchestrator::config::init_config;
 use orchestrator::queue::init_consumers;
 use orchestrator::routes::setup_server;
-use orchestrator::setup::setup_cloud;
+use orchestrator::setup::{setup_cloud, setup_db};
 use orchestrator::telemetry::{setup_analytics, shutdown_analytics};
 
 #[global_allocator]
@@ -66,6 +66,29 @@ async fn run_orchestrator(run_cmd: &RunCmd) -> color_eyre::Result<()> {
 }
 
 async fn setup_orchestrator(setup_cmd: &SetupCmd) -> color_eyre::Result<()> {
-    setup_cloud(setup_cmd).await.expect("Failed to setup cloud");
+    println!("Starting Madara orchestrator setup...");
+
+    // Setup cloud infrastructure (AWS services)
+    match setup_cloud(setup_cmd).await {
+        Ok(_) => {}
+        Err(e) => {
+            println!("Error during cloud setup: {}", e);
+            println!("Setup may be partially completed. You can run the setup command again to continue.");
+            return Err(e);
+        }
+    }
+
+    // Setup database
+    match setup_db().await {
+        Ok(_) => {}
+        Err(e) => {
+            println!("Error during database setup: {}", e);
+            println!("Cloud resources setup was successful, but database setup failed.");
+            println!("You can run the setup command again to retry database setup.");
+            return Err(e);
+        }
+    }
+
+    println!("Orchestrator setup completed successfully! ✅");
     Ok(())
 }
