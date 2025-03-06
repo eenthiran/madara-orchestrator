@@ -25,6 +25,7 @@ processing, proof generation, data submission and state transitions.
     - [Setup Mode](#setup-mode)
     - [Run Mode](#run-mode)
     - [Command Line Options](#command-line-options)
+    - [Using Cargo Make](#using-cargo-make)
   - [⚙️ Configuration](#️-configuration)
     - [AWS Configuration](#aws-configuration)
     - [Prover Configuration](#prover-configuration)
@@ -390,6 +391,26 @@ RUST_LOG=info cargo run --release --bin orchestrator run \
 10. **Monitoring**:
     - `--otel-service-name`: OpenTelemetry service name
     - `--otel-collector-endpoint`: OpenTelemetry collector endpoint
+
+### Using Cargo Make
+
+The repository includes [cargo-make](https://github.com/sagiegurari/cargo-make) configuration to simplify common tasks. To use cargo-make:
+
+1. Run tasks with the `cargo make` command:
+   ```bash
+   # View available tasks
+   cargo make
+   
+   # Setup all AWS resources
+   cargo make setup-aws
+   
+   # Development tasks
+   cargo make build
+   cargo make check
+   cargo make test
+   cargo make clippy
+   cargo make fmt
+   ```
 
 ## ⚙️ Configuration
 

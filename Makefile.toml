@@ -1,0 +1,52 @@
+[config]
+default_to_workspace = false
+skip_core_tasks = true
+
+[tasks.default]
+alias = "help"
+
+[tasks.help]
+script = '''
+echo "Madara Orchestrator - Available Tasks:"
+echo ""
+echo "  setup-aws            - Setup AWS resources (all AWS resources)"=
+echo ""
+echo "  build                - Build the orchestrator in release mode"
+echo "  check                - Run cargo check"
+echo "  test                 - Run all tests"
+echo "  clippy               - Run clippy lints"
+echo "  fmt                  - Format code with rustfmt"
+echo ""
+'''
+
+# Setup Tasks
+[tasks.setup-aws]
+command = "cargo"
+args = ["run", "--release", "--bin", "orchestrator", "setup", "--aws", "--aws-s3", "--aws-sqs", "--aws-sns", "--aws-event-bridge", "--event-bridge-type", "rule"]
+dependencies = ["build"]
+
+# Build Tasks
+[tasks.build]
+command = "cargo"
+args = ["build"]
+
+# Development Tasks
+[tasks.check]
+command = "cargo"
+args = ["check"]
+
+[tasks.test]
+command = "cargo"
+args = ["test"]
+
+[tasks.clippy]
+command = "cargo"
+args = ["clippy", "--all-targets", "--all-features", "--", "-D", "warnings"]
+
+[tasks.fmt]
+command = "cargo"
+args = ["fmt", "--all", "--check"]
+
+[tasks.fmt-fix]
+command = "cargo"
+args = ["fmt", "--all"] 
